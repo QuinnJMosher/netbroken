@@ -56,14 +56,35 @@ namespace ntbrk {
 	class Socket {
 		int handle = 0;
 	public:
-		~Socket() {}
+		~Socket() { if (isOpen()) Close(); }
 
-		bool isOpen() const { return handle != 0; }
-		bool Open(bool blockesExicuion = true) {}
-		void Close() {}
+		bool isOpen() const { return handle >= 0; }
+		bool Open(const char* listeningAdress,  bool blockesExicuion = true) {
+			handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
-		void Send(char* outBuffer, int bufferLength, sockaddr_in* target) {}
-		void Recv(char* outBuffer, int bufferLength, sockaddr_in* source) {}
+			if (isOpen()) {
+				
+				bind(handle, (sockaddr*)&stoa(listeningAdress), sizeof(sockaddr_in));
+
+				if (!blockesExicuion) {
+					DWORD param = 1;
+					ioctlsocket(handle, FIONBIO, &param);
+				}
+
+			}
+
+			return isOpen();
+		}
+		void Close() { closesocket(handle); }
+
+		int Send(char* outBuffer, int bufferLength, sockaddr_in* target) {
+
+			return sendto(handle, outBuffer, bufferLength, 0, (sockaddr*)target, sizeof(sockaddr_in));
+		}
+		int Recv(char* outBuffer, int bufferLength, sockaddr_in* source) {
+			int inLen = sizeof(sockaddr_in);
+			return recvfrom(handle, outBuffer, bufferLength, 0, (sockaddr*)source, &inLen);
+		}
 
 	};
 }
