@@ -53,17 +53,23 @@ int main(int cargs, char* vargs[]) {
 	sockaddr_in outAddress;
 	sockaddr_in inAddress;
 	//int inLen = sizeof(sockaddr_in);
-	char outBuffer[40] = "this isn't an interesting sentence";
-	char inBuffer[40] = "this is a default string";
+	char outBuffer[256] = "this isn't an interesting sentence - Quinn";
+	char inBuffer[256] = "this is a default string";
 	//the place to send to
-	outAddress = ntbrk::stoa("127.0.0.1:50000");
+	//esme's ipv4 10.15.22.54:50000
+
+	std::cin.getline(outBuffer, 255);
+
+	char targetAddress[40];
+	std::cin >> targetAddress;
+	outAddress = ntbrk::stoa(targetAddress);
 
 	//sendto(  socketHandle, outBuffer, 40, 0, (sockaddr*)&outAddress, sizeof(sockaddr_in));//both return # of bytes
 	//recvfrom(socketHandle, inBuffer,  40, 0, (sockaddr*)&inAddress,  &inLen);
 
-	std::cout << mySocket.Send(outBuffer, 40, &outAddress) << std::endl;
-	//Sleep(5000);
-	std::cout << mySocket.Recv(inBuffer, 40, &inAddress) << std::endl;
+	std::cout << mySocket.Send(outBuffer, 256, &outAddress) << std::endl;
+	Sleep(2000);
+	std::cout << mySocket.Recv(inBuffer, 256, &inAddress) << std::endl;
 
 	std::cout << inBuffer << std::endl;
 	system("Pause");
