@@ -8,6 +8,8 @@
 #include <WinSock2.h>
 #include <WS2tcpip.h>
 
+#include "NetBroken.h"
+
 int main(int cargs, char* vargs[]) {
 
 	//activate libs decribe features requested
@@ -29,9 +31,11 @@ int main(int cargs, char* vargs[]) {
 	//internet address for sockets
 	sockaddr_in address;
 
-	address.sin_family           = AF_INET;//the type same as first param in socket
-	address.sin_addr.S_un.S_addr = INADDR_ANY;//accepts info from all adresses
-	address.sin_port             = htons(50000); //the port we're listening to, SHOULD ALWAYS BE A SHORT, htons fixes deferences between network standards and compy standards
+	//address.sin_family           = AF_INET;//the type same as first param in socket
+	//address.sin_addr.S_un.S_addr = INADDR_ANY;//accepts info from all adresses
+	//address.sin_port             = htons(50000); //the port we're listening to, SHOULD ALWAYS BE A SHORT, htons fixes deferences between network standards and compy standards
+
+	address = ntbrk::stoa("0.0.0.0:50000");
 
 	//attach handle to socket
 	bind(socketHandle, (sockaddr*)&address, sizeof(sockaddr_in));//retuns if less than zero then it has failed
@@ -48,13 +52,7 @@ int main(int cargs, char* vargs[]) {
 	char inBuffer[40] = "this is a default string";
 	//ipv4: 10.15.22.156
 	//the place to send to
-	outAddress.sin_addr.S_un.S_un_b.s_b1 = 127;
-	outAddress.sin_addr.S_un.S_un_b.s_b2 = 0;
-	outAddress.sin_addr.S_un.S_un_b.s_b3 = 0;
-	outAddress.sin_addr.S_un.S_un_b.s_b4 = 1;
-
-	outAddress.sin_family = AF_INET;
-	outAddress.sin_port = htons(50000);
+	outAddress = ntbrk::stoa("127.0.0.1:50000");
 
 	sendto(  socketHandle, outBuffer, 40, 0, (sockaddr*)&outAddress, sizeof(sockaddr_in));//both return # of bytes
 	recvfrom(socketHandle, inBuffer,  40, 0, (sockaddr*)&inAddress,  &inLen);
